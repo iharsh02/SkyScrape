@@ -1,7 +1,10 @@
 import { Separator } from "@/components/ui/separator";
+import { Sidebar } from "@/components/global/Sidebar";
+import { BredCrumbHeader } from "@/components/global/BredCrumbHeader";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <div className="flex h-screen">
+    <Sidebar />
     <div className="flex flex-col flex-1 min-h-screen">
       <header className="
         flex 
@@ -11,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         py-4
         h-[50px]
         container">
-        SkyScrapper
+        <BredCrumbHeader />
       </header>
       <Separator>
         <div className="overflow-auto">
