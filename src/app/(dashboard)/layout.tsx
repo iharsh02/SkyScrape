@@ -1,6 +1,7 @@
 import { Separator } from "@/components/ui/separator";
 import { Sidebar } from "@/components/global/Sidebar";
 import { BredCrumbHeader } from "@/components/global/BredCrumbHeader";
+import { ModeToggle } from "@/components/global/ModeToggle";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <div className="flex h-screen">
@@ -15,6 +16,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         h-[50px]
         container">
         <BredCrumbHeader />
+        <div className="gap-1 flex items-center">
+          <ModeToggle />
+        </div>
       </header>
       <Separator>
         <div className="overflow-auto">
