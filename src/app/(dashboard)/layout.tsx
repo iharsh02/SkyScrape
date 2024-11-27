@@ -20,18 +20,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         py-4
         h-[50px]
         container">
-        <div className="flex gap-4 md:hidden">
+        <div className="md:hidden">
           <Logo />
-          <BredCrumbHeader />
         </div>
         <div className="hidden md:block">
           <BredCrumbHeader />
         </div>
-        <div className="gap-1 flex items-center">
+        <div className="gap-2 flex items-center">
           <ModeToggle />
           <div className="flex items-center">
             <SignInButton>
-                <UserButton />
+              <UserButton />
             </SignInButton>
           </div>
           <div className="md:hidden">
