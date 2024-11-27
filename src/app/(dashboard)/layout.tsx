@@ -2,10 +2,14 @@ import { Separator } from "@/components/ui/separator";
 import { Sidebar } from "@/components/global/Sidebar";
 import { BredCrumbHeader } from "@/components/global/BredCrumbHeader";
 import { ModeToggle } from "@/components/global/ModeToggle";
+import { MobileSidebar } from "@/components/global/MobileSidebar";
+import Logo from "@/components/global/Logo";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <div className="flex h-screen">
-    <Sidebar />
+    <div className="hidden md:block">
+      <Sidebar />
+    </div>
     <div className="flex flex-col flex-1 min-h-screen">
       <header className="
         flex 
@@ -15,9 +19,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         py-4
         h-[50px]
         container">
-        <BredCrumbHeader />
+        <div className="flex gap-4 md:hidden">
+          <Logo />
+          <BredCrumbHeader />
+        </div>
+        <div className="hidden md:block">
+          <BredCrumbHeader />
+        </div>
         <div className="gap-1 flex items-center">
           <ModeToggle />
+          <div className="md:hidden">
+            <MobileSidebar />
+          </div>
         </div>
       </header>
       <Separator>

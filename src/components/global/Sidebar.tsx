@@ -32,9 +32,11 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="hidden relative md:block min-w-[280px] max-w-[280px] h-screen overflow-hidden w-full bg-primary/5 dark:bg-secondary/30 dark:text-foreground text-muted-foreground border-r-2 border-separate">
-      <Logo />
-      <div className="flex flex-col p-2">
+    <div className="relative md:block  md:min-w-[280px] md:max-w-[280px] h-screen overflow-hidden w-full md:bg-primary/5 md:dark:bg-secondary/30 dark:text-foreground text-muted-foreground md:border-r-2 border-separate">
+     <div className="hidden md:block">
+        <Logo />
+      </div>
+      <div className="flex flex-col md:p-2">
         {routes.map((route) => {
           const isActive = pathname === route.href;
           return (

@@ -13,7 +13,7 @@ const Logo = ({ fontSize = "2xl", iconSize = 20 }: { fontSize?: string, iconSize
         <BotMessageSquare className="text-white" size={iconSize} />
       </div>
       
-      <div className="flex gap-1">
+      <div className="hidden md:flex md:gap-1">
         <span className="bg-gradient-to-r from-blue-500 to-blue-600
           bg-clip-text text-transparent
           ">Sky
