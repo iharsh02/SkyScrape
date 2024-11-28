@@ -100,7 +100,7 @@ export function CreateWorkflowDialog() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-400 dark:text-white">Proceed</Button>
+              <Button type="submit" disabled={isPending} className="w-full bg-blue-500 hover:bg-blue-400 dark:text-white">Proceed</Button>
             </form>
           </Form>
         </div>
