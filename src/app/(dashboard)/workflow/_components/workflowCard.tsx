@@ -1,16 +1,27 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { FileTextIcon, PlayIcon, ChevronRightIcon } from "lucide-react";
+import { FileTextIcon, PlayIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Workflow } from '@prisma/client';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import TooltipWrapper from '@/components/global/TooltipWrapper';
+import { DeleteWorkflowDialog } from './DeleteWorkflowDialog';
 
 const WorkflowStatus = {
   DRAFT: "DRAFT",
   PUBLISHED: "PUBLISHED"
-};
+}
 
 export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
@@ -26,8 +37,8 @@ export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
   };
 
   return (
-    <Link href={`/workflow/editor/${workflow.id}`}>
-      <Card className="cursor-pointer">
+    <Card className="cursor-pointer flex items-center justify-between pr-5">
+      <Link href={`/workflow/editor/${workflow.id}`}>
         <CardContent className="p-6">
           <div className="flex items-center space-x-4">
             <div
@@ -58,19 +69,50 @@ export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
                   {workflow.status.toLowerCase()}
                 </span>
                 {workflow.description && (
-                  <p className="ml-3 text-sm text-gray-500 dark:text-gray-400 truncate">
+                  <p className="hidden md:block text-wrap w-1/2 lg:w-full ml-3 text-sm text-gray-500 dark:text-gray-400 truncate">
                     {workflow.description}
                   </p>
                 )}
               </div>
             </div>
-
-            <ChevronRightIcon className="h-5 w-5 text-gray-400" />
           </div>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      <WorkflowActions workflowName={workflow.name} workflowId={workflow.id} />
+    </Card>
   );
 };
 
-export default WorkflowCard;
+export function WorkflowActions({ workflowName, workflowId }: { workflowName: string, workflowId: string }) {
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  return (<>
+    <DeleteWorkflowDialog open={showDeleteDialog} setOpen={setShowDeleteDialog} workflowName={workflowName}
+      workflowId={workflowId} />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant={"outline"} size="icon">
+          <TooltipWrapper content="More Actions">
+            <div className='flex items-center justify-center'>
+              <MoreVerticalIcon size={16} />
+            </div>
+          </TooltipWrapper>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => {
+            setShowDeleteDialog((prev) => !prev)
+          }}
+          className="text-destructive flex items-center gap-2 cursor-pointer">
+          <TrashIcon size={16} />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </>
+  );
+}

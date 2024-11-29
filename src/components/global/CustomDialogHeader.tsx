@@ -1,6 +1,6 @@
 import React from 'react';
 import { DialogHeader } from "@/components/ui/dialog";
-import { DialogTitle } from '@radix-ui/react-dialog';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
 import { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -42,6 +42,7 @@ export const CustomDialogHeader = ({
           )}
         </div>
       </DialogTitle>
+      <DialogDescription>Start building you workflow</DialogDescription>
     </DialogHeader>
   );
 };

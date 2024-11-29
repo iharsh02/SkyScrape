@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -24,7 +25,9 @@ export function MobileSidebar() {
       <SheetContent className="flex flex-col items-center ">
         <SheetHeader>
           <SheetTitle><Logo /></SheetTitle>
+          <SheetDescription>SkyScraper</SheetDescription>
         </SheetHeader>
+
         <Sidebar />
       </SheetContent>
     </Sheet>
