@@ -12,8 +12,8 @@ const routes = [
     icons: HomeIcon,
   },
   {
-    href: "/workflow",
-    label: "Workflow",
+    href: "/workflows",
+    label: "Workflows",
     icons: Layers2,
   },
   {
@@ -33,7 +33,7 @@ export function Sidebar() {
 
   return (
     <div className="relative md:block  md:min-w-[280px] md:max-w-[280px] h-screen overflow-hidden w-full md:bg-primary/5 md:dark:bg-secondary/30 dark:text-foreground text-muted-foreground md:border-r-2 border-separate">
-     <div className="hidden md:block">
+      <div className="hidden md:block">
         <Logo />
       </div>
       <div className="flex flex-col md:p-2">
@@ -44,8 +44,8 @@ export function Sidebar() {
               href={route.href}
               key={route.href}
               className={`flex items-center gap-2 p-2 rounded ${isActive
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-blue-600/10 text-muted-foreground"
+                ? "bg-blue-500 text-white"
+                : "hover:bg-blue-600/10 text-muted-foreground"
                 }`}
             >
               <route.icons size={20} />

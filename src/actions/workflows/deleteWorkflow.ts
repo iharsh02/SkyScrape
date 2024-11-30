@@ -23,7 +23,7 @@ export default async function deleteWorkflow({ id }: DeleteWorkflowParams) {
       }
     });
 
-    revalidatePath("/workflow");
+    revalidatePath("/workflows");
     return { success: true };
   } catch (error) {
     return { success: false, error: error };
