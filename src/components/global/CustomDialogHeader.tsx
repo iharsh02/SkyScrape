@@ -16,10 +16,8 @@ interface Props {
 
 export const CustomDialogHeader = ({
   title,
-  subTitle,
   icon: IconComponent,
   iconClassName,
-  subTitleClassName,
   titleClassName,
 }: Props) => {
   return (
@@ -35,14 +33,9 @@ export const CustomDialogHeader = ({
           {title && (
             <h2 className={cn("text-lg font-bold", titleClassName)}>{title}</h2>
           )}
-          {subTitle && (
-            <p className={cn("text-sm text-gray-500", subTitleClassName)}>
-              {subTitle}
-            </p>
-          )}
         </div>
       </DialogTitle>
-      <DialogDescription>Start building you workflow</DialogDescription>
+      <DialogDescription className='text-muted-foreground text-center'>Start building you workflow</DialogDescription>
     </DialogHeader>
   );
 };
