@@ -33,6 +33,6 @@ export default async function UpdateWorkflow({ id, definition }: { id: string, d
     }
   });
 
-  revalidatePath("/workflow");
+  revalidatePath("/workflows");
 }
 
