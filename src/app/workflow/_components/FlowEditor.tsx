@@ -1,14 +1,30 @@
 "use client";
 
 import { Workflow } from '@prisma/client'
-import { Background, BackgroundVariant, Controls, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
+import {
+  addEdge,
+  Background,
+  BackgroundVariant,
+  Connection,
+  Controls,
+  Edge,
+  ReactFlow,
+  useEdgesState,
+  useNodesState,
+  useReactFlow
+} from '@xyflow/react';
 import "@xyflow/react/dist/style.css"
 import NodeComponent from './nodes/NodeComponents';
 import React, { useCallback, useEffect } from 'react';
 import { CreateFlowNode } from '@/lib/workflow/createFlowNode';
 import { TaskType } from '@/types/taskType';
 import { AppNode } from '@/types/appNode';
+import { DeleteEdges } from './edges/DeleteEdges';
 
+
+const edgeTypes = {
+  default: DeleteEdges,
+}
 const nodeTypes = {
   SkyScrapeNode: NodeComponent,
 };
@@ -19,7 +35,7 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
 
 
   const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { setViewport, screenToFlowPosition } = useReactFlow();
 
   useEffect(() => {
@@ -58,9 +74,11 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
 
     const newNode = CreateFlowNode(taskType as TaskType, position);
     setNodes(nds => nds.concat(newNode));
-  }, []);
+  }, [screenToFlowPosition, setNodes]);
 
-
+  const onConnect = useCallback((connection: Connection) => {
+    setEdges(eds => addEdge({ ...connection, animated: true }, eds))
+  }, [setEdges])
   return (
     <main className='h-full w-full'>
       <ReactFlow nodes={nodes}
@@ -68,10 +86,12 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
         onEdgesChange={onEdgesChange}
         onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitViewOptions={fitviewOption}
         fitView
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onConnect={onConnect}
       >
 
         <Controls position='bottom-right' fitViewOptions={fitviewOption} />
