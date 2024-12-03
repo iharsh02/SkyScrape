@@ -11,7 +11,8 @@ import {
   ReactFlow,
   useEdgesState,
   useNodesState,
-  useReactFlow
+  useReactFlow,
+  getOutgoers
 } from '@xyflow/react';
 import "@xyflow/react/dist/style.css"
 import NodeComponent from './nodes/NodeComponents';
@@ -101,41 +102,55 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
     });
   }, [setEdges, setNodes]);
 
-const isValidConnection = useCallback((
-  connection: Edge | Connection
-) => {
-  // Prevent self-connections
-  if (connection.source === connection.target) {
-    return false;
-  }
+  const isValidConnection = useCallback((
+    connection: Edge | Connection
+  ) => {
+    // Prevent self-connections
+    if (connection.source === connection.target) {
+      return false;
+    }
 
-  // Find source and target nodes in the flow
-  const source = nodes.find((node) => node.id === connection.source);
-  const target = nodes.find((node) => node.id === connection.target);
+    // Find source and target nodes in the flow
+    const source = nodes.find((node) => node.id === connection.source);
+    const target = nodes.find((node) => node.id === connection.target);
 
-  // Return false if either node doesn't exist
-  if (!source || !target) return false;
+    // Return false if either node doesn't exist
+    if (!source || !target) return false;
 
-  // Get task definitions from registry
-  const sourceTask = TaskRegistry[source.data.type];
-  const targetTask = TaskRegistry[target.data.type];
+    // Get task definitions from registry
+    const sourceTask = TaskRegistry[source.data.type];
+    const targetTask = TaskRegistry[target.data.type];
 
-  // Find matching output port from source node
-  const output = sourceTask.outputs.find(output => output.name === connection.sourceHandle);
-  // Find matching input port from target node
-  const input = targetTask.inputs.find(input => input.name === connection.targetHandle);
+    // Find matching output port from source node
+    const output = sourceTask.outputs.find(output => output.name === connection.sourceHandle);
+    // Find matching input port from target node
+    const input = targetTask.inputs.find(input => input.name === connection.targetHandle);
 
-  // Return false if:
-  // 1. Either port doesn't exist
-  // 2. Port types don't match
-  if (!input || !output || input.type !== output.type) {
-    return false;
-  }
+    // Return false if:
+    // 1. Either port doesn't exist
+    // 2. Port types don't match
+    if (!input || !output || input.type !== output.type) {
+      return false;
+    }
 
-  // Connection is valid
-  return true;
-}, [nodes]);
- 
+    // check for cycles
+
+    const hasCycle = (node: AppNode, visited = new Set()) => {
+      if (visited.has(node.id)) return false;
+
+      visited.add(node.id);
+
+      for (const outgoer of getOutgoers(node, nodes, edges)) {
+        if (outgoer.id === connection.source) return true;
+        if (hasCycle(outgoer, visited)) return true;
+      }
+    };
+
+    const detectedCycle = hasCycle(target);
+    return !detectedCycle;
+
+  }, [nodes, edges]);
+
   return (
     <main className='h-full w-full'>
       <ReactFlow nodes={nodes}
