@@ -20,6 +20,7 @@ import { CreateFlowNode } from '@/lib/workflow/createFlowNode';
 import { TaskType } from '@/types/taskType';
 import { AppNode } from '@/types/appNode';
 import { DeleteEdges } from './edges/DeleteEdges';
+import { TaskRegistry } from '@/lib/workflow/tasks /registry';
 
 
 const edgeTypes = {
@@ -77,8 +78,64 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
   }, [screenToFlowPosition, setNodes]);
 
   const onConnect = useCallback((connection: Connection) => {
-    setEdges(eds => addEdge({ ...connection, animated: true }, eds))
-  }, [setEdges])
+    setEdges(eds => addEdge({ ...connection, animated: true }, eds));
+
+    if (!connection.targetHandle) return;
+
+    setNodes(prevNodes => {
+      return prevNodes.map(node => {
+        if (node.id === connection.target) {
+          const updatedInputs = { ...node.data.inputs };
+          delete updatedInputs[connection.targetHandle as string];
+
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              inputs: updatedInputs
+            }
+          };
+        }
+        return node;
+      });
+    });
+  }, [setEdges, setNodes]);
+
+const isValidConnection = useCallback((
+  connection: Edge | Connection
+) => {
+  // Prevent self-connections
+  if (connection.source === connection.target) {
+    return false;
+  }
+
+  // Find source and target nodes in the flow
+  const source = nodes.find((node) => node.id === connection.source);
+  const target = nodes.find((node) => node.id === connection.target);
+
+  // Return false if either node doesn't exist
+  if (!source || !target) return false;
+
+  // Get task definitions from registry
+  const sourceTask = TaskRegistry[source.data.type];
+  const targetTask = TaskRegistry[target.data.type];
+
+  // Find matching output port from source node
+  const output = sourceTask.outputs.find(output => output.name === connection.sourceHandle);
+  // Find matching input port from target node
+  const input = targetTask.inputs.find(input => input.name === connection.targetHandle);
+
+  // Return false if:
+  // 1. Either port doesn't exist
+  // 2. Port types don't match
+  if (!input || !output || input.type !== output.type) {
+    return false;
+  }
+
+  // Connection is valid
+  return true;
+}, [nodes]);
+ 
   return (
     <main className='h-full w-full'>
       <ReactFlow nodes={nodes}
@@ -92,6 +149,7 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
         onDragOver={onDragOver}
         onDrop={onDrop}
         onConnect={onConnect}
+        isValidConnection={isValidConnection}
       >
 
         <Controls position='bottom-right' fitViewOptions={fitviewOption} />
