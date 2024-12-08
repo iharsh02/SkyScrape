@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { TaskRegistry } from "@/lib/workflow/tasks /registry";
+import { TaskRegistry } from "@/lib/workflow/tasks/registry";
 import { TaskType } from "@/types/taskType";
 
 import {

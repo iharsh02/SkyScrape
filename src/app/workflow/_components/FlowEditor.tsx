@@ -21,7 +21,7 @@ import { CreateFlowNode } from '@/lib/workflow/createFlowNode';
 import { TaskType } from '@/types/taskType';
 import { AppNode } from '@/types/appNode';
 import { DeleteEdges } from './edges/DeleteEdges';
-import { TaskRegistry } from '@/lib/workflow/tasks /registry';
+import { TaskRegistry } from '@/lib/workflow/tasks/registry';
 
 
 const edgeTypes = {

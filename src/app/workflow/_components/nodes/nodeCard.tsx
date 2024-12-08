@@ -1,19 +1,20 @@
 "use client";
+import useFlowValidation from "@/components/hooks/useFlowValidation";
 import { cn } from "@/lib/utils";
 import { useReactFlow } from "@xyflow/react";
 
-export const NodeCard = (
-  {
-    children,
-    nodeId,
-    isSelected }:
-    {
-      children: React.ReactNode,
-      nodeId: string,
-      isSelected: boolean
-    }) => {
-
+export const NodeCard = ({
+  children,
+  nodeId,
+  isSelected,
+}: {
+  children: React.ReactNode;
+  nodeId: string;
+  isSelected: boolean;
+}) => {
   const { getNode, setCenter } = useReactFlow();
+  const { inValidInputs } = useFlowValidation();
+  const hasInvalidInputs = inValidInputs.some((node) => node.nodeId === nodeId);
 
   return (
     <div
@@ -29,18 +30,19 @@ export const NodeCard = (
         const x = position.x + width! / 2;
         const y = position.y + height! / 2;
 
-        if (x === undefined && y === undefined) return;
-
         setCenter(x, y, {
           zoom: 1,
-          duration: 500
-        })
+          duration: 500,
+        });
       }}
-      className={cn(`rounded-md bg-background border-2 cursor-pointer border-separated
-      w-[420px] text-xs gap-1 flex flex-col
-      `, isSelected && "border-blue-500")} >
+      className={cn(
+        "rounded-md bg-background border-2 cursor-pointer border-separated w-[420px] text-xs gap-1 flex flex-col",
+        isSelected && "border-blue-500",
+        hasInvalidInputs && "border-destructive border-2"
+      )}
+    >
       {children}
-    </div >
-  )
-}
+    </div>
+  );
+};
 

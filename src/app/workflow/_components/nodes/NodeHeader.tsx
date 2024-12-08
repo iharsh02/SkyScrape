@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { TaskRegistry } from "@/lib/workflow/tasks /registry"
+import { TaskRegistry } from "@/lib/workflow/tasks/registry"
 import { TaskType } from "@/types/taskType"
 import { CoinsIcon, CopyIcon, GripVerticalIcon, TrashIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +24,7 @@ export const NodeHeader = ({ taskType, nodeId }: { taskType: TaskType, nodeId: s
           {task.isEntryPoint && <Badge>Entry point</Badge>}
           <Badge className="gap-2 flex items-center text-xs">
             <CoinsIcon size={16} />
+            {task.credits}
           </Badge>
           {!task.isEntryPoint && <><Button
             variant={"outline"}
