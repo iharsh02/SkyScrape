@@ -2,7 +2,12 @@
 
 import { auth } from "@clerk/nextjs/server";
 import db from "@/lib/db";
-import { ExecutionPhaseStatus, WorkflowExecutionPlan, WorkflowExecutionStatus, WorkflowExecutionTrigger } from "@/types/workflow";
+import {
+  ExecutionPhaseStatus,
+  WorkflowExecutionPlan,
+  WorkflowExecutionStatus,
+  WorkflowExecutionTrigger,
+} from "@/types/workflow";
 import { FlowToExecutionPlan } from "@/lib/workflow/ExecutionPlan";
 import { TaskRegistry } from "@/lib/workflow/tasks/registry";
 
@@ -33,7 +38,6 @@ export default async function RunWorkflow(form: {
     throw new Error("workflow not defined");
   }
 
-  let executionPlan: WorkflowExecutionPlan;
   if (!flowDefinition) {
     throw new Error("Flow Defination is not defined");
   }
@@ -48,7 +52,7 @@ export default async function RunWorkflow(form: {
     throw new Error("No Execution plan generated");
   }
 
-  executionPlan = result.executionPlan;
+  const executionPlan: WorkflowExecutionPlan = result.executionPlan;
 
   const execution = await db.workflowExecution.create({
     data: {
