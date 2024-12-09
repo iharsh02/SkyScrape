@@ -41,7 +41,7 @@ export const TopBar = ({ title, subtitle, workFlowId }: Props) => {
         </div>
       </div>
       <div className='flex gap-1 flex-1 justify-end'>
-        <ExecuteBtn  />
+        <ExecuteBtn workflowId={workFlowId} />
         <SaveBtn workFlowId={workFlowId} />
       </div>
     </header>

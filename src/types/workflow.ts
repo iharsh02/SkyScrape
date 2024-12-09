@@ -10,7 +10,7 @@ export type WorkflowTask = {
   inputs: TaskParam[];
   outputs: TaskParam[];
   credits: number;
-}
+};
 
 export type WorkflowExecutionPlanPhase = {
   phase: number;
@@ -18,3 +18,22 @@ export type WorkflowExecutionPlanPhase = {
 };
 
 export type WorkflowExecutionPlan = WorkflowExecutionPlanPhase[];
+
+export enum WorkflowExecutionStatus {
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}
+
+export enum WorkflowExecutionTrigger {
+  MANUAL = "MANUAL",
+}
+
+export enum ExecutionPhaseStatus {
+  CREATED = "CREATED",
+  PENDING = "PENDING",
+  RUNNING = "RUNNING",
+  COMPLETED = "COMPLETED",
+  FAILED = "FAILED",
+}

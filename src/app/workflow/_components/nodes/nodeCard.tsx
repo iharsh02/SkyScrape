@@ -13,7 +13,6 @@ export const NodeCard = ({
   isSelected: boolean;
 }) => {
   const { getNode, setCenter } = useReactFlow();
-  const { inValidInputs } = useFlowValidation();
 
   return (
     <div
