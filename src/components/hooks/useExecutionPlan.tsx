@@ -8,7 +8,8 @@ import { toast } from "sonner";
 const useExecutionPlan = () => {
 
   const { toObject } = useReactFlow();
-  const {  clearErrors } = useFlowValidation();
+  const { clearErrors, setInvalidInputs } = useFlowValidation();
+
   const handleError = useCallback((error: any) => {
     switch (error.type) {
       case FlowToExecutionPlanValidationErrors.NO_ENTRY_POINT:
@@ -17,15 +18,18 @@ const useExecutionPlan = () => {
 
       case FlowToExecutionPlanValidationErrors.INVALID_INPUTS:
         toast.error("Not all inputs value are set");
+        setInvalidInputs(error.invalidElements);
         break;
       default:
         toast.error("Somthing went wrong");
         break;
     }
-  }, [])
+  }, [setInvalidInputs]);
+
   const generateExecutionPlan = useCallback(() => {
     const { nodes, edges } = toObject();
     const { executionPlan, error } = FlowToExecutionPlan(nodes as AppNode[], edges);
+
     if (error) {
       handleError(error);
       return null;

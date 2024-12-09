@@ -35,11 +35,23 @@ export function FlowToExecutionPlan(
     };
   }
 
-  const plannedNodes = new Set<string>();
   const inputsWithErrors: AppNodeMissingInputs[] = [];
 
+  const plannedNodes = new Set<string>();
+
+  const invalidInputs = getInvalidInputs(entryPoint, edges, plannedNodes);
+
+  if (invalidInputs.length > 0) {
+    inputsWithErrors.push({
+      nodeId: entryPoint.id,
+      inputs: invalidInputs,
+    });
+  }
   const executionPlan: WorkflowExecutionPlan = [
-    { phase: 1, nodes: [entryPoint] },
+    {
+      phase: 1,
+      nodes: [entryPoint],
+    },
   ];
 
   plannedNodes.add(entryPoint.id);

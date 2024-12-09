@@ -14,7 +14,6 @@ export const NodeCard = ({
 }) => {
   const { getNode, setCenter } = useReactFlow();
   const { inValidInputs } = useFlowValidation();
-  const hasInvalidInputs = inValidInputs.some((node) => node.nodeId === nodeId);
 
   return (
     <div
@@ -38,7 +37,6 @@ export const NodeCard = ({
       className={cn(
         "rounded-md bg-background border-2 cursor-pointer border-separated w-[420px] text-xs gap-1 flex flex-col",
         isSelected && "border-blue-500",
-        hasInvalidInputs && "border-destructive border-2"
       )}
     >
       {children}
