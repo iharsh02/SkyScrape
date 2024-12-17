@@ -4,7 +4,7 @@ import { Coins, HomeIcon, Layers2, ShieldCheck } from "lucide-react";
 import Logo from "./Logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { UserAvailCreditsBadge } from "../billing/UserAvailCreditsBadge";
 const routes = [
   {
     href: "/",
@@ -36,6 +36,9 @@ export function Sidebar() {
       <div className="hidden md:block">
         <Logo />
       </div>
+      <div className="flex items-center justify-center">
+        <UserAvailCreditsBadge />
+      </div>
       <div className="flex flex-col md:p-2">
         {routes.map((route) => {
           const isActive = pathname === route.href;
@@ -43,10 +46,11 @@ export function Sidebar() {
             <Link
               href={route.href}
               key={route.href}
-              className={`flex items-center gap-2 p-2 rounded ${isActive
-                ? "bg-blue-500 text-white"
-                : "hover:bg-blue-600/10 text-muted-foreground"
-                }`}
+              className={`flex items-center gap-2 p-2 rounded ${
+                isActive
+                  ? "bg-blue-500 text-white"
+                  : "hover:bg-blue-600/10 text-muted-foreground"
+              }`}
             >
               <route.icons size={20} />
               <span>{route.label}</span>

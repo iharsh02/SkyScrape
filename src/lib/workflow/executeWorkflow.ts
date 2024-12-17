@@ -42,7 +42,9 @@ export async function ExecuteWorkflow(executionId: string): Promise<void> {
         phase,
         environment,
         edges,
+        execution.userId,
       );
+      creditsConsumed += phaseExecution.creditsConsumed;
       if (!phaseExecution.success) {
         executionFailed = true;
         break;
@@ -147,6 +149,7 @@ async function executeWorkflowPhase(
   phase: ExecutionPhase,
   environment: Environment,
   edges: Edge[],
+  userId: string,
 ): Promise<{ success: boolean }> {
   const logCollector = CreateLogCollector();
   const startedAt = new Date();
@@ -164,15 +167,23 @@ async function executeWorkflowPhase(
   });
 
   const creditsRequired = TaskRegistry[node.data.type]?.credits || 0;
-  console.log(
-    `Executing phase ${phase.name} with ${creditsRequired} credits required`,
-  );
 
-  const success = await executePhase(phase, node, environment, logCollector);
+  let success = await DecrementCredits(userId, creditsRequired, logCollector);
+
+  const creditsConsumed = success ? creditsConsumed : 0;
+  if (success) {
+    success = await executePhase(phase, node, environment, logCollector);
+  }
   const outputs = environment.phase[node.id]?.outputs || {};
 
-  await finalizePhase(phase.id, success, outputs, logCollector);
-  return { success };
+  await finalizePhase(
+    phase.id,
+    success,
+    outputs,
+    logCollector,
+    creditsConsumed,
+  );
+  return { success, creditsConsumed };
 }
 
 async function finalizePhase(
@@ -180,6 +191,7 @@ async function finalizePhase(
   success: boolean,
   outputs: any,
   logCollector: LogCollector,
+  creditsConsumed: number,
 ): Promise<void> {
   const finalStatus = success
     ? ExecutionPhaseStatus.COMPLETED
@@ -191,6 +203,7 @@ async function finalizePhase(
       status: finalStatus,
       completedAt: new Date(),
       outputs: JSON.stringify(outputs),
+      creditsConsumed,
       ExecutionLog: {
         createMany: {
           data: logCollector.getAll().map((log) => ({
@@ -287,5 +300,25 @@ async function cleanUpEnvironment(environment: Environment): Promise<void> {
     } catch (error) {
       console.error("Failed to close the browser:", error);
     }
+  }
+}
+
+async function DecrementCredits(
+  userId: string,
+  amount: number,
+  logCollector: LogCollector,
+) {
+  try {
+    await db.userBalance.update({
+      where: {
+        userId,
+        credits: { gte: amount },
+      },
+      data: { credits: { decrement: amount } },
+    });
+    return true;
+  } catch (err) {
+    logCollector.error("Insufficient balance");
+    throw err;
   }
 }
