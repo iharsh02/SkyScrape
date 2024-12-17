@@ -34,7 +34,7 @@ export async function ExecuteWorkflow(executionId: string): Promise<void> {
     await initializeWorkflowExecution(executionId, execution.workflow.id);
     await initializeWorkflowPhaseStatus(execution);
 
-    const creditsConsumed = 0;
+    let creditsConsumed = 0;
     let executionFailed = false;
 
     for (const phase of execution.phases) {
@@ -45,6 +45,7 @@ export async function ExecuteWorkflow(executionId: string): Promise<void> {
         execution.userId,
       );
       creditsConsumed += phaseExecution.creditsConsumed;
+
       if (!phaseExecution.success) {
         executionFailed = true;
         break;
@@ -150,7 +151,7 @@ async function executeWorkflowPhase(
   environment: Environment,
   edges: Edge[],
   userId: string,
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; creditsConsumed: number }> {
   const logCollector = CreateLogCollector();
   const startedAt = new Date();
   const node = JSON.parse(phase.node) as AppNode;
@@ -168,13 +169,19 @@ async function executeWorkflowPhase(
 
   const creditsRequired = TaskRegistry[node.data.type]?.credits || 0;
 
-  let success = await DecrementCredits(userId, creditsRequired, logCollector);
-
-  const creditsConsumed = success ? creditsConsumed : 0;
-  if (success) {
-    success = await executePhase(phase, node, environment, logCollector);
+  let success = true;
+  try {
+    success = await DecrementCredits(userId, creditsRequired, logCollector);
+    if (success) {
+      success = await executePhase(phase, node, environment, logCollector);
+    }
+  } catch (error) {
+    logCollector.error("Error in phase execution: ");
+    success = false;
   }
+
   const outputs = environment.phase[node.id]?.outputs || {};
+  const creditsConsumed = success ? creditsRequired : 0;
 
   await finalizePhase(
     phase.id,
@@ -197,24 +204,29 @@ async function finalizePhase(
     ? ExecutionPhaseStatus.COMPLETED
     : ExecutionPhaseStatus.FAILED;
 
-  await db.executionPhase.update({
-    where: { id: phaseId },
-    data: {
-      status: finalStatus,
-      completedAt: new Date(),
-      outputs: JSON.stringify(outputs),
-      creditsConsumed,
-      ExecutionLog: {
-        createMany: {
-          data: logCollector.getAll().map((log) => ({
-            message: log.message,
-            timestamp: log.timestamp,
-            logLevel: log.level,
-          })),
+  try {
+    await db.executionPhase.update({
+      where: { id: phaseId },
+      data: {
+        status: finalStatus,
+        completedAt: new Date(),
+        outputs: JSON.stringify(outputs),
+        creditsConsumed,
+        ExecutionLog: {
+          createMany: {
+            data: logCollector.getAll().map((log) => ({
+              message: log.message,
+              timestamp: log.timestamp,
+              logLevel: log.level,
+            })),
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Failed to finalize phase:", error);
+    throw error;
+  }
 }
 
 async function executePhase(
@@ -265,7 +277,7 @@ function setupEnvironmentForPhase(
 
     const outputValue =
       environment.phase[connectedEdge.source]?.outputs[
-      connectedEdge.sourceHandle!
+        connectedEdge.sourceHandle!
       ];
     environment.phase[node.id].inputs[input.name] = outputValue;
   }
@@ -307,18 +319,24 @@ async function DecrementCredits(
   userId: string,
   amount: number,
   logCollector: LogCollector,
-) {
+): Promise<boolean> {
   try {
     await db.userBalance.update({
       where: {
         userId,
-        credits: { gte: amount },
+        credits: {
+          gte: amount,
+        },
       },
-      data: { credits: { decrement: amount } },
+      data: {
+        credits: {
+          decrement: amount,
+        },
+      },
     });
     return true;
-  } catch (err) {
+  } catch (error) {
     logCollector.error("Insufficient balance");
-    throw err;
+    return false;
   }
 }

@@ -139,7 +139,7 @@ export const ExecutionViewer = ({ initialData }: { initialData: ExecutionData })
                 <CoinsIcon size={18} className="stroke-muted-foreground" />
                 <div className="flex gap-1 items-center">
                   <span>Credits</span>
-                  <span>0</span>
+                  <span>{phaseDetails.data?.creditsConsumed}</span>
                 </div>
               </Badge>
               <Badge variant="outline" className="space-x-4">
