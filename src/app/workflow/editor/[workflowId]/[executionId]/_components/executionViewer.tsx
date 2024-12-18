@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { LogLevel } from "@/types/log";
 import { PhaseStatus } from "./PhaseStatus";
+import CountUp from "@/components/billing/ReactCounter";
 
 type ExecutionData = Awaited<ReturnType<typeof GetWorkflowExecutionPhase>>;
 
@@ -86,7 +87,7 @@ export const ExecutionViewer = ({ initialData }: { initialData: ExecutionData })
           <ExecutionLabel
             icon={CoinsIcon}
             label="Credits Consumed"
-            value={creditsConsumed}
+            value={<CountUp value={creditsConsumed} />}
           />
         </div>
         <Separator />

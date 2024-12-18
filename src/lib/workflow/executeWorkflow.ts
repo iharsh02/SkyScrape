@@ -178,6 +178,7 @@ async function executeWorkflowPhase(
   } catch (error) {
     logCollector.error("Error in phase execution: ");
     success = false;
+    throw error;
   }
 
   const outputs = environment.phase[node.id]?.outputs || {};
@@ -336,7 +337,8 @@ async function DecrementCredits(
     });
     return true;
   } catch (error) {
-    logCollector.error("Insufficient balance");
+    logCollector.error(`Insufficient balance`);
+    console.error(error); // need to handel this error properly
     return false;
   }
 }

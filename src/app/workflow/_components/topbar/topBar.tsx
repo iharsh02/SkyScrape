@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { SaveBtn } from "./saveBtn";
 import { ExecuteBtn } from "./ExcuteBtn";
+import { HistoryBtn } from "./HistoryBtn";
 
 interface Props {
   title: string;
@@ -46,6 +47,7 @@ export const TopBar = ({
       <div className="flex gap-1 flex-1 justify-end">
         {!hideButtons && (
           <>
+            <HistoryBtn workflowId={workFlowId} />
             <ExecuteBtn workflowId={workFlowId} />
             <SaveBtn workFlowId={workFlowId} />
           </>

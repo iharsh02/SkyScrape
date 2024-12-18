@@ -1,10 +1,10 @@
 "use client";
-
 import Link from "next/link";
 import GetUserBalance from "@/actions/billing/getUserBalance";
 import { useQuery } from "@tanstack/react-query";
 import { CoinsIcon, Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import CountUp from "./ReactCounter";
 
 export const UserAvailCreditsBadge = () => {
   const [isClient, setIsClient] = useState(false);
@@ -35,7 +35,11 @@ export const UserAvailCreditsBadge = () => {
         {query.isLoading ? (
           <Loader2Icon className="animate-spin w-4 h-4" />
         ) : (
-          query.data ?? "-"
+          query.data !== undefined ? (
+            <CountUp value={query.data} />
+          ) : (
+            "-"
+          )
         )}
       </div>
     </Link>
