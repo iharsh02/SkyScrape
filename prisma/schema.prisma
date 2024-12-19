@@ -13,8 +13,11 @@ model Workflow {
   name        String
   description String
 
-  definition String
-  status     String
+  definition    String
+  executionPlan String?
+  creditsCost   Int     @default(0)
+
+  status String
 
   lastRunAt     DateTime?
   lastRunId     String?
@@ -76,6 +79,6 @@ model ExecutionLog {
 }
 
 model UserBalance {
-  userId   String @id
-  credits  Int    @default(0)
+  userId  String @id
+  credits Int    @default(0)
 }

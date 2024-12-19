@@ -8,12 +8,14 @@ import React from "react";
 import { SaveBtn } from "./saveBtn";
 import { ExecuteBtn } from "./ExcuteBtn";
 import { HistoryBtn } from "./HistoryBtn";
+import { PublishBtn } from "./PublishBtn";
 
 interface Props {
   title: string;
   subtitle?: string;
   workFlowId: string;
   hideButtons?: boolean;
+  isPublished?: boolean;
 }
 
 export const TopBar = ({
@@ -21,6 +23,7 @@ export const TopBar = ({
   subtitle,
   workFlowId,
   hideButtons = false,
+  isPublished = false
 }: Props) => {
   const router = useRouter();
   return (
@@ -49,7 +52,12 @@ export const TopBar = ({
           <>
             <HistoryBtn workflowId={workFlowId} />
             <ExecuteBtn workflowId={workFlowId} />
-            <SaveBtn workFlowId={workFlowId} />
+            {!isPublished && (
+              <>
+                <SaveBtn workFlowId={workFlowId} />
+                <PublishBtn workflowId={workFlowId} />
+              </>
+            )}
           </>
         )}
       </div>

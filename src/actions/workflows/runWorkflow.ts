@@ -12,6 +12,7 @@ import { FlowToExecutionPlan } from "@/lib/workflow/ExecutionPlan";
 import { TaskRegistry } from "@/lib/workflow/tasks/registry";
 import { redirect } from "next/navigation";
 import { ExecuteWorkflow } from "@/lib/workflow/executeWorkflow";
+import { WorkflowStatus } from "@/schema/workflow";
 
 export default async function RunWorkflow(form: {
   workflowId: string;
@@ -40,21 +41,29 @@ export default async function RunWorkflow(form: {
     throw new Error("workflow not defined");
   }
 
-  if (!flowDefinition) {
-    throw new Error("Flow Defination is not defined");
-  }
+  let executionPlan: WorkflowExecutionPlan;
 
-  const flow = JSON.parse(flowDefinition);
-  const result = FlowToExecutionPlan(flow.nodes, flow.edges);
-  if (result.error) {
-    throw new Error("flow defination not valid");
-  }
+  if (workflow.status === WorkflowStatus.PUBLISHED) {
+    if (!workflow.executionPlan) {
+      throw new Error("no execution plan found in published workflow");
+    }
+    executionPlan = JSON.parse(workflow.executionPlan);
+  } else {
+    if (!flowDefinition) {
+      throw new Error("Flow Defination is not defined");
+    }
+    const flow = JSON.parse(flowDefinition);
+    const result = FlowToExecutionPlan(flow.nodes, flow.edges);
+    if (result.error) {
+      throw new Error("flow defination not valid");
+    }
 
-  if (!result.executionPlan) {
-    throw new Error("No Execution plan generated");
-  }
+    if (!result.executionPlan) {
+      throw new Error("No Execution plan generated");
+    }
 
-  const executionPlan: WorkflowExecutionPlan = result.executionPlan;
+    executionPlan = result.executionPlan;
+  }
 
   const execution = await db.workflowExecution.create({
     data: {
