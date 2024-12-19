@@ -9,6 +9,7 @@ import { SaveBtn } from "./saveBtn";
 import { ExecuteBtn } from "./ExcuteBtn";
 import { HistoryBtn } from "./HistoryBtn";
 import { PublishBtn } from "./PublishBtn";
+import { UnPublishBtn } from "./unpublishBtn";
 
 interface Props {
   title: string;
@@ -57,6 +58,9 @@ export const TopBar = ({
                 <SaveBtn workFlowId={workFlowId} />
                 <PublishBtn workflowId={workFlowId} />
               </>
+            )}
+            {isPublished && (
+              <UnPublishBtn workflowId={workFlowId} />
             )}
           </>
         )}
