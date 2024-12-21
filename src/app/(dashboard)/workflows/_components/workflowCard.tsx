@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import TooltipWrapper from '@/components/global/TooltipWrapper';
 import { DeleteWorkflowDialog } from './DeleteWorkflowDialog';
+import { RunBtn } from './RunWorkflow';
 
 const WorkflowStatus = {
   DRAFT: "DRAFT",
@@ -78,7 +79,12 @@ export const WorkflowCard = ({ workflow }: { workflow: Workflow }) => {
           </div>
         </CardContent>
       </Link>
-      <WorkflowActions workflowName={workflow.name} workflowId={workflow.id} />
+      <div className='flex gap-2 items-center px-5'>
+        {!isDraft && (
+          <RunBtn workflowId={workflow.id} />
+        )}
+        <WorkflowActions workflowName={workflow.name} workflowId={workflow.id} />
+      </div>
     </Card>
   );
 };
