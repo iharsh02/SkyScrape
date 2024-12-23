@@ -16,7 +16,10 @@ import { Edge } from "@xyflow/react";
 import { LogCollector } from "@/types/log";
 import { CreateLogCollector } from "../log";
 
-export async function ExecuteWorkflow(executionId: string): Promise<void> {
+export async function ExecuteWorkflow(
+  executionId: string,
+  nextRunAt?: Date,
+): Promise<void> {
   const execution = await db.workflowExecution.findUnique({
     where: { id: executionId },
     include: { workflow: true, phases: true },
@@ -31,7 +34,11 @@ export async function ExecuteWorkflow(executionId: string): Promise<void> {
   const environment: Environment = { phase: {} };
 
   try {
-    await initializeWorkflowExecution(executionId, execution.workflow.id);
+    await initializeWorkflowExecution(
+      executionId,
+      execution.workflow.id,
+      nextRunAt,
+    );
     await initializeWorkflowPhaseStatus(execution);
 
     let creditsConsumed = 0;
@@ -76,6 +83,7 @@ export async function ExecuteWorkflow(executionId: string): Promise<void> {
 async function initializeWorkflowExecution(
   executionId: string,
   workflowId: string,
+  nextRunAt?: Date,
 ): Promise<void> {
   try {
     await db.$transaction([
@@ -92,6 +100,7 @@ async function initializeWorkflowExecution(
           lastRunAt: new Date(),
           lastRunStatus: WorkflowExecutionStatus.RUNNING,
           lastRunId: executionId,
+          ...(nextRunAt && { nextRunAt }),
         },
       }),
     ]);
