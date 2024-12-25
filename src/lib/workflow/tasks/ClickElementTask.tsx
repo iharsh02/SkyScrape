@@ -25,8 +25,12 @@ export const ClickElementTask = {
   ] as const,
   outputs: [
     {
-      name: 'web page',
+      name: 'HTML',
       type: TaskParamType.STRING
+    },
+    {
+      name: 'web page',
+      type: TaskParamType.BROWSER_INSTANCE
     },
   ] as const,
   credits: 1,
