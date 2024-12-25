@@ -60,7 +60,7 @@ async function UserWorkflows() {
     return (
       <div className="flex flex-col gap-4 h-full items-center justify-center">
         <div className="rounded-full bg-accent w-20 h-20 flex items-center justify-center">
-          <InboxIcon size={40} className="text-blue-500" />
+          <InboxIcon size={40}  />
         </div>
         <div className="flex flex-col gap-1 text-center">
           <p className="font-bold">No workflows created yet</p>

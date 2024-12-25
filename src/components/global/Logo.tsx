@@ -1,30 +1,40 @@
+"use client";
 import { cn } from "@/lib/utils";
 import { BotMessageSquare } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
-const Logo = ({ fontSize = "2xl", iconSize = 20 }: { fontSize?: string, iconSize?: number }) => {
+const Logo = ({
+  fontSize = "2xl",
+  iconSize = 20,
+}: {
+  fontSize?: string;
+  iconSize?: number;
+}) => {
+  const router = useRouter();
   return (
-    <Link href="/" className={cn(
-      "text-2xl font-extrabold  flex items-center justify-center py-4 gap-2", fontSize
-    )}
+    <Link
+      href="/"
+      className={cn(
+        "text-2xl font-extrabold  flex items-center justify-center p-4 gap-2",
+        fontSize
+      )}
     >
-      <div className="rounded-xl bg-gradient-to-r 
-        from-blue-500 to-blue-600 p-2">
-        <BotMessageSquare className="text-white" size={iconSize} />
-      </div>
-      
-      <div className="hidden md:flex md:gap-1">
-        <span className="bg-gradient-to-r from-blue-500 to-blue-600
-          bg-clip-text text-transparent
-          ">Sky
-        </span>
-       
-        <span className="text-stone-700 dark:text-stone-300">Scrape
-        </span>
+      <Button
+        size={"icon"}
+        onClick={() => router.push("/")}
+      >
+        <BotMessageSquare size={iconSize} />
+      </Button>
 
+      <div className="hidden md:flex md:gap-1">
+        <span>Sky</span>
+
+        <span>Scrape</span>
       </div>
     </Link>
-  )
-}
+  );
+};
 
 export default Logo;

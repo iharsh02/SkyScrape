@@ -40,13 +40,13 @@ export const WorkflowCard = ({ workflow }: WorkflowCardProps) => {
   const isDraft = workflow.status === WorkflowStatus.DRAFT;
 
   const statusColors = {
-    [WorkflowStatus.DRAFT]: "bg-amber-200",
-    [WorkflowStatus.PUBLISHED]: "bg-sky-200"
+    [WorkflowStatus.DRAFT]: "bg-neutral-200",
+    [WorkflowStatus.PUBLISHED]: "bg-neutral-200"
   };
 
   const iconColors = {
-    [WorkflowStatus.DRAFT]: "text-amber-700",
-    [WorkflowStatus.PUBLISHED]: "text-sky-700"
+    [WorkflowStatus.DRAFT]: "text-neutral-700",
+    [WorkflowStatus.PUBLISHED]: "text-neutral-700"
   };
 
   return (

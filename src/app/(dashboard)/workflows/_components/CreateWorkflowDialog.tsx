@@ -62,7 +62,7 @@ export function CreateWorkflowDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-blue-500 text-white hover:bg-blue-400 hover:text-white"
+          
         >
           Create Workflow
         </Button>
@@ -111,7 +111,7 @@ export function CreateWorkflowDialog() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-blue-500 hover:bg-blue-400 dark:text-white"
+                className="w-full  "
               >
                 {isPending ? "Proceding..." : "Proceed"}
               </Button>

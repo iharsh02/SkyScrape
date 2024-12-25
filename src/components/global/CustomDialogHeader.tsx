@@ -27,7 +27,7 @@ export const CustomDialogHeader = ({
           {IconComponent && (
             <IconComponent
               size={30}
-              className={cn("text-blue-500", iconClassName)}
+              className={cn(iconClassName)}
             />
           )}
           {title && (

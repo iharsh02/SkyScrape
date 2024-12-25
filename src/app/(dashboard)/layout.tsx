@@ -1,50 +1,28 @@
-import { Separator } from "@/components/ui/separator";
-import { Sidebar } from "@/components/global/Sidebar";
-import { BredCrumbHeader } from "@/components/global/BredCrumbHeader";
-import { ModeToggle } from "@/components/global/ModeToggle";
-import { MobileSidebar } from "@/components/global/MobileSidebar";
-import Logo from "@/components/global/Logo";
-import { SignInButton, UserButton } from "@clerk/nextjs";
+import { BredCrumbHeader } from "@/components/global/BredCrumbHeader"
+import { ModeToggle } from "@/components/global/ModeToggle"
+import { AppSidebar } from "@/components/global/sidebar/app-sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <div className="flex h-screen">
-    <div className="hidden md:block">
-      <Sidebar />
-    </div>
-    <div className="flex flex-col flex-1 min-h-screen">
-      <header className="
-        flex 
-        items-center
-        justify-between
-        px-6
-        py-4
-        h-[50px]
-        container">
-        <div className="md:hidden">
-          <Logo />
-        </div>
-        <div className="hidden md:block">
-          <BredCrumbHeader />
-        </div>
-        <div className="gap-2 flex items-center">
+  return (
+    <SidebarProvider defaultOpen={false}>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex justify-between px-2 h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1"/>
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <BredCrumbHeader />
+          </div>
           <ModeToggle />
-          <div className="flex items-center">
-            <SignInButton>
-              <UserButton />
-            </SignInButton>
-          </div>
-          <div className="md:hidden">
-            <MobileSidebar />
-          </div>
-        </div>
-      </header>
-      <Separator>
-        <div className="overflow-auto">
-          <div className="flex-1 container py-4 text-accent-foreground">
-            {children}
-          </div>
-        </div>
-      </Separator>
-    </div>
-  </div>
+        </header>
+        {children}
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }

@@ -23,14 +23,14 @@ export const UserAvailCreditsBadge = () => {
   if (!isClient) {
     return (
       <Link href="/billing" className="flex items-center space-x-2">
-        <CoinsIcon size={20} className="text-blue-500" />
+        <CoinsIcon size={20}  />
       </Link>
     );
   }
 
   return (
     <Link href="/billing" className="flex items-center space-x-2 py-4">
-      <CoinsIcon size={20} className="text-blue-500" />
+      <CoinsIcon size={20} />
       <div>
         {query.isLoading ? (
           <Loader2Icon className="animate-spin w-4 h-4" />
