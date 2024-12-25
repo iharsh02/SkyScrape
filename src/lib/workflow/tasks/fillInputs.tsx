@@ -1,13 +1,13 @@
 import { TaskParamType, TaskType } from "@/types/taskType";
 import { WorkflowTask } from "@/types/workflow";
-import { CodeIcon, LucideProps } from "lucide-react";
+import { Edit3Icon, LucideProps } from "lucide-react";
 
-export const PageToHtmlTask = {
-  label: "Get HTML form the page",
+export const FillInputTask = {
+  label: "Fill Input",
   icon: (props: LucideProps) => {
-    return <CodeIcon className="stroke-orange-400" {...props} />
+    return <Edit3Icon className="stroke-orange-400" {...props} />
   },
-  type: TaskType.PAGE_TO_HTML,
+  type: TaskType.FILL_INPUT,
   isEntryPoint: false,
   inputs: [
     {
@@ -15,16 +15,22 @@ export const PageToHtmlTask = {
       type: TaskParamType.BROWSER_INSTANCE,
       required: true,
     },
+    {
+      name: 'Selector',
+      type: TaskParamType.STRING,
+      required: true,
+    },
+    {
+      name: 'value',
+      type: TaskParamType.STRING,
+      required: true,
+    },
   ] as const,
   outputs: [
-    {
-      name: 'HTML',
-      type: TaskParamType.STRING
-    },
     {
       name: 'web page',
       type: TaskParamType.BROWSER_INSTANCE,
     }
   ] as const,
-  credits: 2,
+  credits: 1,
 } satisfies WorkflowTask;

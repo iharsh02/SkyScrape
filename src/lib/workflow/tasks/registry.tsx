@@ -3,6 +3,9 @@ import { ExtractTextFromElement } from "./ExtractTextFromElement";
 import { LaunchBrowserTask } from "./LaunchBrowser";
 import { PageToHtmlTask } from "./pageToHtml";
 import { WorkflowTask } from "@/types/workflow";
+import { FillInputTask } from "./fillInputs";
+import { ClickElementTask } from "./ClickElementTask";
+import { WaitForElementTask } from "./WaitForElementTask";
 
 type Registry = {
   [K in TaskType]: WorkflowTask & { type: K };
@@ -11,5 +14,8 @@ type Registry = {
 export const TaskRegistry: Registry = {
   LAUNCH_BROWSER: LaunchBrowserTask,
   PAGE_TO_HTML: PageToHtmlTask,
-  EXTRACT_TEXT_FROM_ELEMENT: ExtractTextFromElement
+  EXTRACT_TEXT_FROM_ELEMENT: ExtractTextFromElement,
+  FILL_INPUT: FillInputTask,
+  CLICK_ELEMENT: ClickElementTask,
+  WAIT_FOR_ELEMENT: WaitForElementTask 
 };

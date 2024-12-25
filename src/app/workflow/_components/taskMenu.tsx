@@ -15,7 +15,16 @@ export const TaskMenu = () => {
   return (
     <aside
       className="w-[340px] min-w-[340px] max-w-[340px] border-r-2 border-separate h-full p-2 px-4 overflow-auto">
-      <Accordion type="multiple" className="w-full" defaultValue={["extraction"]}>
+      <Accordion type="multiple" className="w-full" defaultValue={["extraction", "interaction" , "time"]}>
+        <AccordionItem value="interaction">
+          <AccordionTrigger className="font-bold flex items-center justify-between">
+            User interactions
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <TaskMenuBtn taskType={TaskType.FILL_INPUT} />
+            <TaskMenuBtn taskType={TaskType.CLICK_ELEMENT} />
+          </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="extraction">
           <AccordionTrigger className="font-bold flex items-center justify-between">
             Data extraction
@@ -25,6 +34,16 @@ export const TaskMenu = () => {
             <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
           </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="time">
+          <AccordionTrigger className="font-bold flex items-center justify-between">
+            Time Controlled
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <TaskMenuBtn taskType={TaskType.WAIT_FOR_ELEMENT} />
+          </AccordionContent>
+        </AccordionItem>
+
+
       </Accordion>
     </aside>
   );

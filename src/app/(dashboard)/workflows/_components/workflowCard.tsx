@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { FileTextIcon, PlayIcon, MoreVerticalIcon, TrashIcon, CornerDownRight, MoveRightIcon, CoinsIcon, ChevronRightIcon } from 'lucide-react';
 import Link from "next/link";
@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { PhaseStatus } from '@/app/workflow/editor/[workflowId]/[executionId]/_components/PhaseStatus';
 import { ExecutionPhaseStatus } from '@/types/workflow';
 import { formatDistanceToNow } from "date-fns";
+import { format } from 'date-fns';
 
 const WorkflowStatus = {
   DRAFT: "DRAFT",
@@ -83,7 +84,7 @@ export const WorkflowCard = ({ workflow }: WorkflowCardProps) => {
                   {workflow.status.toLowerCase()}
                 </Badge>
               </div>
-              
+
               <div className="flex-shrink-0 flex items-center gap-2">
                 {!isDraft && <RunBtn workflowId={workflow.id} />}
                 <WorkflowActions workflowName={workflow.name} workflowId={workflow.id} />
@@ -100,13 +101,13 @@ export const WorkflowCard = ({ workflow }: WorkflowCardProps) => {
 
         {!isDraft && (
           <div className="flex flex-col space-y-4">
-            <ScheduleSection 
+            <ScheduleSection
               isDraft={isDraft}
               creditsCost={workflow.creditsCost}
               workflowId={workflow.id}
               cron={workflow.cron}
             />
-            <LastRunDetails workflow={workflow} />
+            <WorkflowRunDetails workflow={workflow} />
           </div>
         )}
       </CardContent>
@@ -124,11 +125,11 @@ export function WorkflowActions({ workflowName, workflowId }: WorkflowActionsPro
 
   return (
     <>
-      <DeleteWorkflowDialog 
-        open={showDeleteDialog} 
-        setOpen={setShowDeleteDialog} 
+      <DeleteWorkflowDialog
+        open={showDeleteDialog}
+        setOpen={setShowDeleteDialog}
         workflowName={workflowName}
-        workflowId={workflowId} 
+        workflowId={workflowId}
       />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -185,27 +186,43 @@ function ScheduleSection({ isDraft, creditsCost, workflowId, cron }: ScheduleSec
 interface LastRunDetailsProps {
   workflow: Workflow;
 }
-
-export function LastRunDetails({ workflow }: LastRunDetailsProps) {
-  const { lastRunStatus, lastRunAt, id: workflowId } = workflow;
-
+export function WorkflowRunDetails({ workflow }: LastRunDetailsProps) {
+  const { lastRunStatus, lastRunAt, nextRunAt, id: workflowId } = workflow;
+  
+  const nextScheduleAt = useMemo(() => 
+    nextRunAt ? format(new Date(nextRunAt), "yyyy-MM-dd HH:mm") : null
+  , [nextRunAt]);
+  
+  const [nextSchedule, setNextSchedule] = useState(nextScheduleAt);
+  
+  useEffect(() => {
+    setNextSchedule(nextScheduleAt);
+  }, [nextScheduleAt]);
+  
   if (!lastRunAt || !lastRunStatus) return null;
-
-  const formattedStartedAt = formatDistanceToNow(new Date(lastRunAt), { addSuffix: true });
+  
+  const formattedLastRun = formatDistanceToNow(new Date(lastRunAt), { addSuffix: true });
 
   return (
     <div className="bg-gray-100 dark:bg-neutral-900 rounded-md px-4 py-2 shadow-inner">
       <Link
         href={`/workflow/editor/${workflowId}/history`}
-        className="flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="flex flex-col gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <div className="flex items-center gap-2">
-          <span>Last Run</span>
-          <PhaseStatus status={lastRunStatus as ExecutionPhaseStatus} />
-          <span className="capitalize">{lastRunStatus.toLowerCase()}</span>
-          <span className="text-xs text-gray-500">{formattedStartedAt}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span>Last Run</span>
+            <PhaseStatus status={lastRunStatus as ExecutionPhaseStatus} />
+            <span className="capitalize">{lastRunStatus.toLowerCase()}</span>
+            <span className="text-xs text-gray-500">{formattedLastRun}</span>
+          </div>
+          <ChevronRightIcon size={14} />
         </div>
-        <ChevronRightIcon size={14} />
+        {nextSchedule && (
+          <div className="text-xs text-gray-500">
+            Next scheduled run: {nextSchedule}
+          </div>
+        )}
       </Link>
     </div>
   );
