@@ -6,6 +6,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -17,7 +18,7 @@ export function BredCrumbHeader() {
 
   return (<div className="flex items-center flex-start">
     <Breadcrumb >
-      <BreadcrumbList>{paths.map((path , index) => (
+      <BreadcrumbList>{paths.map((path, index) => (
         <React.Fragment key={index}>
           <BreadcrumbItem>
             <BreadcrumbLink className="capitalize" href={`
@@ -26,6 +27,7 @@ export function BredCrumbHeader() {
               {path === "" ? "home" : path}
             </BreadcrumbLink>
           </BreadcrumbItem>
+          {index !== paths.length - 1 && <BreadcrumbSeparator />}
         </React.Fragment>
       ))}</BreadcrumbList>
     </Breadcrumb>

@@ -13,35 +13,35 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { createWorkflowSchema, createWorkflowSchemaType } from "@/schema/workflow";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "@tanstack/react-query";
-import createWorkflow from "@/actions/workflows/createWorkflow";
 import { toast } from "sonner";
 import { useCallback, useState } from "react";
+import { createCredentialsSchema, createCredentialsSchemaType } from "@/schema/credentails";
+import createCredentials from "@/actions/credentials/CreateCredentials";
 
-export function CreateWorkflowDialog() {
+export function CreateCredentialsDialog() {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<createWorkflowSchemaType>({
-    resolver: zodResolver(createWorkflowSchema),
+  const form = useForm<createCredentialsSchemaType>({
+    resolver: zodResolver(createCredentialsSchema),
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: createWorkflow,
+    mutationFn: createCredentials,
     onSuccess: () => {
-      toast.success("Workflow created successfully");
+      toast.success("Credential created successfully");
       form.reset();
       setOpen(false);
     },
     onError: () => {
-      toast.error("Failed to create workflow");
+      toast.error("Failed to create credential");
     },
   });
 
   const onSubmit = useCallback(
-    (values: createWorkflowSchemaType) => {
+    (values: createCredentialsSchemaType) => {
       mutate(values);
     },
     [mutate]
@@ -50,18 +50,18 @@ export function CreateWorkflowDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          Create Workflow
+        <Button variant="outline" className="flex items-center gap-2">
+          Create Credential
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <div className="space-y-6">
           <div className="space-y-2">
-            <DialogTitle className="text-xl font-semibold">
-              Create New Workflow
+            <DialogTitle className="text-2xl font-bold">
+              Create Credential
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Create a new workflow to automate your tasks
+              Add a new credential to use in your workflows
             </p>
           </div>
 
@@ -72,15 +72,15 @@ export function CreateWorkflowDialog() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Workflow Name</FormLabel>
+                    <FormLabel>Credential Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="e.g., Daily Data Sync" 
-                        {...field} 
+                      <Input
+                        placeholder="e.g., OpenAI API Key"
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Give your workflow a clear, descriptive name
+                      Enter a unique name for your credential. This name will be used to identify the credential in your workflows.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -88,19 +88,19 @@ export function CreateWorkflowDialog() {
               />
               <FormField
                 control={form.control}
-                name="description"
+                name="value"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Credential Value</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Describe what this workflow will do..." 
-                        className="resize-none"
+                      <Textarea
+                        placeholder="Enter your credential value here"
+                        className="resize-none h-24"
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Briefly explain the purpose of this workflow
+                      Enter the credential value (e.g., API key, access token). This value will be securely encrypted and stored.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -109,9 +109,9 @@ export function CreateWorkflowDialog() {
               <Button
                 type="submit"
                 disabled={isPending}
-                className="w-full mt-4"
+                className="w-full mt-6"
               >
-                {isPending ? "Creating..." : "Create Workflow"}
+                {isPending ? "Creating..." : "Create Credential"}
               </Button>
             </form>
           </Form>
@@ -120,3 +120,5 @@ export function CreateWorkflowDialog() {
     </Dialog>
   );
 }
+
+
