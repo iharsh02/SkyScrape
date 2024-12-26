@@ -5,7 +5,7 @@ import { LucideProps, TextIcon } from "lucide-react";
 export const ExtractTextFromElement = {
   label: "Extract text from Element",
   icon: (props: LucideProps) => {
-    return <TextIcon className="stroke-orange-400" {...props} />
+    return <TextIcon className="dark:stroke-white" {...props} />
   },
   type: TaskType.EXTRACT_TEXT_FROM_ELEMENT,
   isEntryPoint: false,

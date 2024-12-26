@@ -5,12 +5,13 @@ export enum TaskType {
   FILL_INPUT = "FILL_INPUT",
   CLICK_ELEMENT = "CLICK_ELEMENT",
   WAIT_FOR_ELEMENT = "WAIT_FOR_ELEMENT",
+  DELIVER_VIA_WEBHOOK = "DELIVER_VIA_WEBHOOK",
 }
 
 export enum TaskParamType {
   STRING = "STRING",
   BROWSER_INSTANCE = "BROWSER_INSTANCE",
-  SELECT = "SELECT"
+  SELECT = "SELECT",
 }
 
 export interface TaskParam {

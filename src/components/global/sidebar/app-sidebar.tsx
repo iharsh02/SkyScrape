@@ -18,7 +18,7 @@ import {
 const data = {
   teams:
   {
-    name: "Sky Scraper",
+    name: "Sky Scrape",
     logo: BotMessageSquare,
     plan: "Enterprise",
   },

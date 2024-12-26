@@ -5,7 +5,7 @@ import { EyeIcon, LucideProps } from "lucide-react";
 export const WaitForElementTask = {
   label: "Wait for Element Task",
   icon: (props: LucideProps) => {
-    return <EyeIcon className="stroke-orange-400" {...props} />
+    return <EyeIcon className="dark:stroke-white" {...props} />
   },
   type: TaskType.WAIT_FOR_ELEMENT,
   isEntryPoint: false,

@@ -5,7 +5,7 @@ import { Edit3Icon, LucideProps } from "lucide-react";
 export const FillInputTask = {
   label: "Fill Input",
   icon: (props: LucideProps) => {
-    return <Edit3Icon className="stroke-orange-400" {...props} />
+    return <Edit3Icon className="dark:stroke-white" {...props} />
   },
   type: TaskType.FILL_INPUT,
   isEntryPoint: false,

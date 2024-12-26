@@ -5,7 +5,7 @@ import { GlobeIcon, LucideProps } from "lucide-react";
 export const LaunchBrowserTask = {
   label: "Launch Browser",
   icon: (props: LucideProps) => {
-    return <GlobeIcon className="stroke-orange-400" {...props} />;
+    return <GlobeIcon className="dark:stroke-white" {...props} />;
   },
   type: TaskType.LAUNCH_BROWSER,
   isEntryPoint: true,

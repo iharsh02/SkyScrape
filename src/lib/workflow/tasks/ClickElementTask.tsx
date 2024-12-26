@@ -5,7 +5,7 @@ import { LucideProps, MousePointerClick } from "lucide-react";
 export const ClickElementTask = {
   label: "Mouse Click",
   icon: (props: LucideProps) => {
-    return <MousePointerClick className="stroke-orange-400" {...props} />
+    return <MousePointerClick className="dark:stroke-white" {...props} />
   },
   type: TaskType.CLICK_ELEMENT,
   isEntryPoint: false,

@@ -15,7 +15,7 @@ export const TaskMenu = () => {
   return (
     <aside
       className="w-[340px] min-w-[340px] max-w-[340px] border-r-2 border-separate h-full p-2 px-4 overflow-auto">
-      <Accordion type="multiple" className="w-full" defaultValue={["extraction", "interaction" , "time"]}>
+      <Accordion type="multiple" className="w-full" defaultValue={["extraction", "interaction", "time", "result"]}>
         <AccordionItem value="interaction">
           <AccordionTrigger className="font-bold flex items-center justify-between">
             User interactions
@@ -40,6 +40,14 @@ export const TaskMenu = () => {
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-1">
             <TaskMenuBtn taskType={TaskType.WAIT_FOR_ELEMENT} />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="result">
+          <AccordionTrigger className="font-bold flex items-center justify-between">
+            Result
+          </AccordionTrigger>
+          <AccordionContent className="flex flex-col gap-1">
+            <TaskMenuBtn taskType={TaskType.DELIVER_VIA_WEBHOOK} />
           </AccordionContent>
         </AccordionItem>
 

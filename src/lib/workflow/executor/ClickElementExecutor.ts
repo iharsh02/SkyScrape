@@ -9,7 +9,7 @@ export async function ClickElementExecutor(
     if (!selector) {
       environment.log.error("Input selector not defined");
     }
-    await environment.getPage()!.click(selector);
+    await environment.getPage()!.click(selector,)
     return true;
   } catch (error: any) {
     environment.log.error(error.message);
