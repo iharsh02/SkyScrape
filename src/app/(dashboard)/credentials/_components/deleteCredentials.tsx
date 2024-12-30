@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import deleteCredentials from "@/actions/credentials/deleteCredentials";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input";
+import deleteCredentials from "@/actions/credentials/deleteCredentials";
 
 interface DeleteCredentialsProps {
   open: boolean;

@@ -1,4 +1,3 @@
-import { GetCredentialsofUsers } from "@/actions/credentials/getCredentialsofUsers";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,6 +5,7 @@ import { ShieldCheck, ShieldOffIcon } from 'lucide-react';
 import { Suspense } from "react";
 import { CreateCredentialsDialog } from "./_components/CreateCredentialsDialog";
 import { CredentialCard } from "./_components/credentailCard";
+import { getCredentialsOfUsers } from "@/actions/credentials/getCredentialsofUsers";
 
 export default function CredentialPage() {
   return (
@@ -43,7 +43,7 @@ function CredentialsSkeleton() {
 }
 
 async function UserCredentials() {
-  const credentials = await GetCredentialsofUsers();
+  const credentials = await getCredentialsOfUsers();
 
   if (credentials.length === 0) {
     return (

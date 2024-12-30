@@ -168,7 +168,7 @@ export const FlowEditor = ({ workflow }: { workflow: Workflow }) => {
       >
 
         <Controls position='bottom-right' fitViewOptions={fitviewOption} />
-        <Background variant={BackgroundVariant.Lines} gap={100} size={1} color='currentColor' className='opacity-20' />
+        <Background variant={BackgroundVariant.Lines} gap={250} size={1} color='currentColor' className='opacity-20' />
 
       </ReactFlow>
     </main>

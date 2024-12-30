@@ -35,7 +35,7 @@ export const CustomDialogHeader = ({
           )}
         </div>
       </DialogTitle>
-      <DialogDescription className='text-muted-foreground text-center'>Start building you workflow</DialogDescription>
+      <DialogDescription className='text-muted-foreground text-center hidden'>Start building you workflow</DialogDescription>
     </DialogHeader>
   );
 };
