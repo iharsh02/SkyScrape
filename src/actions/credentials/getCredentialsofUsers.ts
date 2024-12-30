@@ -5,7 +5,7 @@ import db from "@/lib/db";
 
 export async function getCredentialsOfUsers() {
   const { userId } = await auth();
-  
+
   if (!userId) {
     throw new Error("Unauthenticated");
   }
@@ -20,6 +20,7 @@ export async function getCredentialsOfUsers() {
       },
     });
   } catch (error) {
+    console.error(error);
     throw new Error("Failed to fetch credentials");
   }
 }

@@ -17,9 +17,9 @@ interface TaskMenuBtnProps {
 export const TaskMenu = () => {
   return (
     <aside className="w-[340px] min-w-[340px] max-w-[340px] border-r-2 border-separate h-full p-2 px-4 overflow-auto">
-      <Accordion 
-        type="multiple" 
-        className="w-full" 
+      <Accordion
+        type="multiple"
+        className="w-full"
         defaultValue={["extraction", "interaction", "time", "result", "ai", "read_and_write"]}
       >
         <AccordionItem value="interaction">
@@ -29,6 +29,8 @@ export const TaskMenu = () => {
           <AccordionContent className="flex flex-col gap-1">
             <TaskMenuBtn taskType={TaskType.FILL_INPUT} />
             <TaskMenuBtn taskType={TaskType.CLICK_ELEMENT} />
+            <TaskMenuBtn taskType={TaskType.SCROLL_TO_ELEMENT} />
+            <TaskMenuBtn taskType={TaskType.NAVIGATE_URL} />
           </AccordionContent>
         </AccordionItem>
 
@@ -57,6 +59,7 @@ export const TaskMenu = () => {
           </AccordionTrigger>
           <AccordionContent className="flex flex-col gap-1">
             <TaskMenuBtn taskType={TaskType.READ_PROPERTY_FROM_JSON} />
+            <TaskMenuBtn taskType={TaskType.ADD_PROPERTY_TO_JSON} />
           </AccordionContent>
         </AccordionItem>
 
