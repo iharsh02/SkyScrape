@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,13 +17,13 @@ export default function ExecutionStatusChart({ data }: { data: ChartData }) {
   }))
 
   return (
-    <Card className="w-full h-[400px]">
-      <CardHeader className="flex flex-row items-center space-x-2">
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center space-x-2 pb-2">
         <Layers2Icon className="w-6 h-6 text-muted-foreground" />
         <CardTitle>Workflow Executions Status</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="aspect-[2/1] sm:aspect-[3/1]">
+        <div className="h-[350px] w-full mt-4">
           <ChartContainer
             config={{
               Success: {
@@ -35,16 +35,23 @@ export default function ExecutionStatusChart({ data }: { data: ChartData }) {
                 color: "hsl(var(--destructive))",
               },
             }}
-            className="w-full h-[300px]"
+            className="w-full h-full"
           >
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
+              <BarChart data={chartData} margin={{ top: 0, right: 15, left: 0, bottom: 0 }}>
                 <XAxis
                   dataKey="date"
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }}
                 />
                 <YAxis
                   stroke="hsl(var(--muted-foreground))"
@@ -57,7 +64,6 @@ export default function ExecutionStatusChart({ data }: { data: ChartData }) {
                 <Bar dataKey="Success" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="Failed" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
           </ChartContainer>
         </div>
       </CardContent>
