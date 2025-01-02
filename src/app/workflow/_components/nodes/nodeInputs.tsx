@@ -31,7 +31,7 @@ export function NodeInput({ input, nodeId }: { input: TaskParam, nodeId: string 
         isConnectable={!isConnected}
         type="target"
         position={Position.Left}
-        className={cn(" !bg-muted-foreground !border-2 !border-backgound !-left-2 !-w-4 !-h-4",
+        className={cn("!bg-muted-foreground !border-2 !border-backgound !-left-2 !w-4 !h-4",
           ColorForHandel[input.type])}
       />
     )}

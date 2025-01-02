@@ -20,7 +20,7 @@ export function NodeOutput({ output }: { output: TaskParam }) {
       id={output.name}
       type="source"
       position={Position.Right}
-      className={cn(" !bg-muted-foreground !border-2 !border-backgound !-right-2 !-w-4 !-h-4"
+      className={cn(" !bg-muted-foreground !border-2 !border-backgound !-right-2 !w-4 !h-4"
         , ColorForHandel[output.type]
       )}
     />
