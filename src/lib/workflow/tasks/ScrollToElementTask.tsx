@@ -8,7 +8,7 @@ export const ScrollToElementTask = {
     return <ArrowUpIcon className="dark:stroke-white" {...props} />;
   },
   type: TaskType.SCROLL_TO_ELEMENT,
-  isEntryPoint: true,
+  isEntryPoint: false,
   credits: 1,
   inputs: [
     {
