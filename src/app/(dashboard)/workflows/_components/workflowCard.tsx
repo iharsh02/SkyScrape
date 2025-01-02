@@ -123,11 +123,20 @@ interface WorkflowActionsProps {
 export function WorkflowActions({ workflowName, workflowId }: WorkflowActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+  const handleOpenChange = (open: boolean) => {
+    setShowDeleteDialog(open);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDeleteDialog(true);
+  };
+
   return (
     <>
       <DeleteWorkflowDialog
         open={showDeleteDialog}
-        setOpen={setShowDeleteDialog}
+        setOpen={handleOpenChange}
         workflowName={workflowName}
         workflowId={workflowId}
       />
@@ -143,7 +152,7 @@ export function WorkflowActions({ workflowName, workflowId }: WorkflowActionsPro
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => setShowDeleteDialog(true)}
+            onClick={handleDeleteClick}
             className="text-destructive flex items-center gap-2 cursor-pointer"
           >
             <TrashIcon size={16} />
@@ -154,7 +163,6 @@ export function WorkflowActions({ workflowName, workflowId }: WorkflowActionsPro
     </>
   );
 }
-
 interface ScheduleSectionProps {
   isDraft: boolean;
   creditsCost: number;

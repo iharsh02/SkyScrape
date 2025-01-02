@@ -1,5 +1,3 @@
-"use client";
-
 import deleteWorkflow from "@/actions/workflows/deleteWorkflow";
 import {
   AlertDialog,
@@ -10,33 +8,39 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/alert-dialog";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
 import { toast } from "sonner";
 
-interface Props {
+interface DeleteWorkflowDialogProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   workflowName: string;
   workflowId: string;
 }
 
-export function DeleteWorkflowDialog({ open, setOpen, workflowName, workflowId }: Props) {
-  const [confirmText, setConfirmText] = useState("");
+export function DeleteWorkflowDialog({
+  open,
+  setOpen,
+  workflowName,
+  workflowId,
+}: DeleteWorkflowDialogProps) {
 
   const deleteMutation = useMutation({
     mutationFn: () => deleteWorkflow({ id: workflowId }),
     onSuccess: () => {
       toast.success("Workflow deleted successfully", { id: workflowId });
-      setConfirmText("");
       setOpen(false);
     },
     onError: () => {
-      toast.error("Failed to delete workflow", { id: workflowId });
-    }
+      toast.error(`Failed to delete workflow`, { id: workflowId });
+    },
   });
+
+  const handleDelete = () => {
+    toast.loading("Deleting workflow...", { id: workflowId });
+    deleteMutation.mutate();
+  };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -44,37 +48,24 @@ export function DeleteWorkflowDialog({ open, setOpen, workflowName, workflowId }
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete{" "}
+            This action cannot be undone. This will permanently delete the workflow{" "}
             <span className="font-medium text-destructive">{workflowName}</span>{" "}
-            workflow and remove its data from our servers.
+            and remove its data from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="space-y-4">
-          <div className="text-sm text-muted-foreground">
-            To confirm, please enter the workflow name below.
-          </div>
-          <Input
-            placeholder={workflowName}
-            className="text-destructive font-medium"
-            value={confirmText}
-            onChange={(e) => setConfirmText(e.target.value)}
-          />
-        </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              toast.loading("Deleting workflow...", { id: workflowId });
-              deleteMutation.mutate();
-            }}
+            onClick={handleDelete}
             className="bg-destructive hover:bg-destructive/90"
-            disabled={confirmText !== workflowName || deleteMutation.isPending}
+            disabled={deleteMutation.isPending}
           >
-            Delete
+            {deleteMutation.isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
+
+

@@ -8,7 +8,7 @@ export const NavigateUrlTask = {
     return <GlobeIcon className="dark:stroke-white" {...props} />;
   },
   type: TaskType.NAVIGATE_URL,
-  isEntryPoint: true,
+  isEntryPoint: false,
   credits: 1,
   inputs: [
     {
