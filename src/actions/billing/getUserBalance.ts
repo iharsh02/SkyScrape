@@ -17,7 +17,7 @@ export default async function GetUserBalance() {
     });
 
     if (!balance) {
-      return -1;
+      return 0;
     }
 
     return balance.credits;

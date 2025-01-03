@@ -82,6 +82,7 @@ model ExecutionLog {
 model UserBalance {
   userId  String @id
   credits Int    @default(0)
+ demoClaimed Boolean @default(false)
 }
 
 model Credential {

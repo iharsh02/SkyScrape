@@ -8,6 +8,10 @@ import { StatsCard, StatsCardGridSkeleton } from "./_components/statusCard";
 import { Activity, CreditCard, ListChecks } from "lucide-react";
 import getWorkflowExecutionStatus from "@/actions/home/getWorkflowExecutionStatus";
 import ExecutionStatusChart from "./_components/executionStatusChart";
+import UsageStatsPieChart from "./_components/usageStatsChart";
+import getUsageStats from "@/actions/home/getUsageStats";
+import GetUserBalance from "@/actions/billing/getUserBalance";
+import BalanceChart from "./_components/userBalanceChart";
 
 export default function HomePage({
   searchParams
@@ -86,11 +90,21 @@ async function StatsCards({
 
 
 async function StatusExecutionStatus({
-  selectedPeriod
+  selectedPeriod,
 }: {
   selectedPeriod: Period;
 }) {
+  const balance = await GetUserBalance();
   const data = await getWorkflowExecutionStatus(selectedPeriod);
+  const usage = await getUsageStats();
 
-  return <ExecutionStatusChart data={data} />
+  return (
+    <>
+      <ExecutionStatusChart data={data} />
+      <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+        <UsageStatsPieChart data={usage} />
+        <BalanceChart initialBalance={balance} />
+      </div>
+    </>
+  )
 }
