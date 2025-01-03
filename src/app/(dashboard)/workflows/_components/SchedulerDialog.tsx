@@ -1,122 +1,208 @@
 "use client";
 
+import { useState, useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { ClockIcon, AlertTriangle, Trash2 } from 'lucide-react';
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { CalendarIcon, AlertTriangle, ClockIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { CustomDialogHeader } from "@/components/global/CustomDialogHeader";
-import { Input } from "@/components/ui/input";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { UpdateWorkflowCron } from "@/actions/workflows/updateWorkflowCrons";
-import { useMemo, useState } from "react";
 import cronstrue from "cronstrue";
-import parser from "cron-parser";
 
-export function SchedulerDialog(props: { workflowId: string; cron: string | null }) {
-  const [cron, setCron] = useState(props.cron || "");
-  const [validCron, setValidCron] = useState(false);
-  const [readableCron, setReadableCron] = useState<string | null>(props.cron || null);
+const ScheduleType = z.enum(["everyMinute", "hourly", "daily", "weekly", "monthly"]);
+type ScheduleType = z.infer<typeof ScheduleType>;
+
+const scheduleSchema = z.object({
+  scheduleType: ScheduleType
+});
+
+type ScheduleFormValues = z.infer<typeof scheduleSchema>;
+
+interface SchedulerDialogProps {
+  workflowId: string;
+  cron: string | null;
+}
+
+const CRON_MAP: Record<ScheduleType, string> = {
+  everyMinute: "* * * * *",
+  hourly: "0 * * * *",
+  daily: "0 0 * * *",
+  weekly: "0 0 * * 0",
+  monthly: "0 0 1 * *"
+};
+
+const CRON_TO_TYPE: Record<string, ScheduleType> = Object.entries(CRON_MAP)
+  .reduce((acc, [key, value]) => ({ ...acc, [value]: key as ScheduleType }), {});
+
+export function SchedulerDialog({ workflowId, cron }: SchedulerDialogProps) {
+  const [open, setOpen] = useState(false);
+
+  const getCronFromScheduleType = (type: ScheduleType): string => {
+    return CRON_MAP[type];
+  };
+
+  const getScheduleTypeFromCron = (cron: string | null): ScheduleType => {
+    if (!cron) return "everyMinute";
+    return CRON_TO_TYPE[cron] || "everyMinute";
+  };
+
+  const form = useForm<ScheduleFormValues>({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      scheduleType: getScheduleTypeFromCron(cron)
+    }
+  });
+
+  const readableCron = cron ? cronstrue.toString(cron) : null;
+  const validCron = !!cron;
 
   const mutation = useMutation({
     mutationFn: UpdateWorkflowCron,
     onSuccess: () => {
-      toast.success("Schedule updated successfully", { id: "cron" });
+      toast.success("Schedule updated successfully");
+      setOpen(false);
     },
     onError: () => {
-      toast.error("Something went wrong", { id: "cron" });
+      toast.error("Failed to update schedule");
     },
   });
 
-  useMemo(() => {
-    if (cron.trim() === "") {
-      setValidCron(false);
-      setReadableCron(null);
-      return;
-    }
-    try {
-      parser.parseExpression(cron);
-      const userCronStr = cronstrue.toString(cron);
-      setValidCron(true);
-      setReadableCron(userCronStr);
-    } catch {
-      setValidCron(false);
-      setReadableCron(null);
-    }
-  }, [cron]);
+  const onSubmit = useCallback(
+    (values: ScheduleFormValues) => {
+      const cronValue = getCronFromScheduleType(values.scheduleType);
+      mutation.mutate({
+        id: workflowId,
+        cron: cronValue,
+      });
+    },
+    [mutation, workflowId]
+  );
 
-  const handleSave = () => {
-    toast.loading("Saving...", { id: "cron" });
+  const removeCron = useCallback(() => {
     mutation.mutate({
-      id: props.workflowId,
-      cron,
+      id: workflowId,
+      cron: "",
     });
-  };
+  }, [mutation, workflowId]);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="link" size="sm" className={cn("text-sm p-0 h-auto")}>
+        <Button variant="outline" size="sm" className={cn("text-sm")}>
           {validCron ? (
             <div className="flex items-center gap-1 text-green-500">
-              <ClockIcon />
+              <ClockIcon className="h-4 w-4" />
               {readableCron}
             </div>
           ) : (
             <div className="flex items-center gap-1 text-orange-500">
-              <AlertTriangle className="h-3 w-3 mr-1" />
+              <AlertTriangle className="h-4 w-4" />
               Set schedule
             </div>
           )}
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="px-0">
-        <CustomDialogHeader title="Schedule Workflow Execution" icon={CalendarIcon} />
-
-        <div className="p-6 space-y-4">
-          <p className="text-muted-foreground text-sm">
-            Specify a cron expression to schedule Workflow execution
-          </p>
-          <Input
-            value={cron}
-            placeholder="E.g. * * * * *"
-            onChange={(e) => setCron(e.target.value)}
-          />
-          <div
-            className={cn(
-              "rounded-md p-4 border text-sm",
-              validCron
-                ? "border-green-500 text-green-500"
-                : "border-destructive text-destructive"
-            )}
-          >
-            {validCron ? readableCron : "Not a valid cron expression"}
+      <DialogContent className="sm:max-w-[425px]">
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <DialogTitle className="text-xl font-semibold">
+              Schedule Workflow
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Choose how often this workflow should run
+            </p>
           </div>
-        </div>
 
-        <DialogFooter className="px-6 gap-2">
-          <DialogClose asChild>
-            <Button className="w-full" variant="secondary">
-              Cancel
-            </Button>
-          </DialogClose>
-          <Button
-            className="w-full"
-            disabled={mutation.isPending || !validCron}
-            onClick={handleSave}
-          >
-            {mutation.isPending ? "Saving..." : "Save"}
-          </Button>
-        </DialogFooter>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="scheduleType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-2"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="everyMinute" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Every minute</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="hourly" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Hourly</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="daily" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Daily</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="weekly" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Weekly</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="monthly" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Monthly</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex space-x-2">
+                <Button
+                  type="submit"
+                  disabled={mutation.isPending}
+                  className="flex-1"
+                >
+                  {mutation.isPending ? "Saving..." : "Save Schedule"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={removeCron}
+                  disabled={mutation.isPending || !validCron}
+                  className="flex-none"
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </DialogContent>
     </Dialog>
   );
 }
-

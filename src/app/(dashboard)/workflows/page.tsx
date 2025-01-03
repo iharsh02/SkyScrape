@@ -3,9 +3,9 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, InboxIcon, FileText, Clock } from "lucide-react";
 import { Suspense } from "react";
-import { CreateWorkflowDialog } from "./_components/CreateWorkflowDialog";
 import { WorkflowCard } from "./_components/workflowCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreateWorkflowDialog } from "./_components/CreateWorkflowDialog";
 
 const WorkflowStatus = {
   DRAFT: "DRAFT",

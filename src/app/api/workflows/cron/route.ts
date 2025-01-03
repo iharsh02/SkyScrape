@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { WorkflowStatus } from "@/schema/workflow";
 import db from "@/lib/db";
 import { getAppUrl } from "@/lib/helper/getAppUrl";

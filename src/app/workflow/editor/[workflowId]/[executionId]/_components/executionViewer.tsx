@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ExecutionPhaseStatus, WorkflowExecutionStatus } from "@/types/workflow";
-import { CalendarIcon, CircleDashedIcon, ClockIcon, CoinsIcon, Loader2Icon, type LucideIcon, WorkflowIcon } from 'lucide-react';
+import { CalendarIcon, CircleDashedIcon, ClockIcon, CoinsIcon, Loader2Icon,  LucideIcon, WorkflowIcon } from 'lucide-react';
 import { formatDistanceToNow } from "date-fns";
 import { GetWorkflowExecutionPhase } from "@/actions/workflows/getWorkflowExecutionPhase";
 import { ReactNode, useEffect, useState } from "react";
@@ -55,6 +55,7 @@ export const ExecutionViewer = ({ initialData }: { initialData: ExecutionData })
     queryKey: ["phaseDetails", selectedPhase],
     enabled: Boolean(selectedPhase),
     queryFn: () => GetWorkflowPhaseDetails(selectedPhase!),
+    refetchInterval: 1000,
   });
 
   const duration = DatesToDurationString(query.data?.completedAt, query.data?.startedAt);
@@ -114,8 +115,8 @@ export const ExecutionViewer = ({ initialData }: { initialData: ExecutionData })
               key={phase.id}
               onClick={() => {
                 if (!isRunning) {
-                  setSelectedPhase(phase.id);
-                  setIsSidebarOpen(false);
+                setSelectedPhase(phase.id);
+                setIsSidebarOpen(false);
                 }
               }}
               variant={selectedPhase === phase.id ? "secondary" : "ghost"}
