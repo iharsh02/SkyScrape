@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { TaskRegistry } from "@/lib/workflow/tasks/registry";
 import { TaskType } from "@/types/taskType";
@@ -9,78 +10,103 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface TaskMenuBtnProps {
   taskType: TaskType;
 }
 
+interface TaskGroup {
+  title: string;
+  tasks: TaskType[];
+}
+
 export const TaskMenu = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const taskGroups: TaskGroup[] = useMemo(() => [
+    {
+      title: "User Interactions",
+      tasks: [
+        TaskType.FILL_INPUT,
+        TaskType.CLICK_ELEMENT,
+        TaskType.SCROLL_TO_ELEMENT,
+        TaskType.NAVIGATE_URL,
+      ],
+    },
+    {
+      title: "Data Extraction",
+      tasks: [
+        TaskType.PAGE_TO_HTML,
+        TaskType.EXTRACT_TEXT_FROM_ELEMENT,
+      ],
+    },
+    {
+      title: "AI",
+      tasks: [TaskType.EXTRACT_DATA_WITH_AI],
+    },
+    {
+      title: "Read & Write",
+      tasks: [
+        TaskType.READ_PROPERTY_FROM_JSON,
+        TaskType.ADD_PROPERTY_TO_JSON,
+      ],
+    },
+    {
+      title: "Time Controlled",
+      tasks: [TaskType.WAIT_FOR_ELEMENT],
+    },
+    {
+      title: "Result",
+      tasks: [TaskType.DELIVER_VIA_WEBHOOK],
+    },
+  ], []);
+
   return (
-    <aside className="w-[340px] min-w-[340px] max-w-[340px] border-r-2 border-separate h-full p-2 px-4 overflow-auto">
-      <Accordion
-        type="multiple"
-        className="w-full"
-        defaultValue={["extraction", "interaction", "time", "result", "ai", "read_and_write"]}
+    <aside
+      className={`transition-all duration-300 ease-in-out border-r-2 border-separate h-full p-2 overflow-auto ${
+        isExpanded ? "w-[340px] min-w-[340px] max-w-[340px]" : "w-[60px] min-w-[60px] max-w-[60px]"
+      }`}
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={toggleExpand}
+        className="mb-4 w-full"
+        aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
       >
-        <AccordionItem value="interaction">
-          <AccordionTrigger className="font-bold">
-            User Interactions
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.FILL_INPUT} />
-            <TaskMenuBtn taskType={TaskType.CLICK_ELEMENT} />
-            <TaskMenuBtn taskType={TaskType.SCROLL_TO_ELEMENT} />
-            <TaskMenuBtn taskType={TaskType.NAVIGATE_URL} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="extraction">
-          <AccordionTrigger className="font-bold">
-            Data Extraction
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.PAGE_TO_HTML} />
-            <TaskMenuBtn taskType={TaskType.EXTRACT_TEXT_FROM_ELEMENT} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="ai">
-          <AccordionTrigger className="font-bold">
-            AI
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.EXTRACT_DATA_WITH_AI} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="read_and_write">
-          <AccordionTrigger className="font-bold">
-            Read & Write
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.READ_PROPERTY_FROM_JSON} />
-            <TaskMenuBtn taskType={TaskType.ADD_PROPERTY_TO_JSON} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="time">
-          <AccordionTrigger className="font-bold">
-            Time Controlled
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.WAIT_FOR_ELEMENT} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="result">
-          <AccordionTrigger className="font-bold">
-            Result
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-1">
-            <TaskMenuBtn taskType={TaskType.DELIVER_VIA_WEBHOOK} />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+        {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      </Button>
+      {isExpanded ? (
+        <Accordion
+          type="multiple"
+          className="w-full"
+          defaultValue={taskGroups.map(group => group.title.toLowerCase().replace(/\s+/g, '_'))}
+        >
+          {taskGroups.map((group) => (
+            <AccordionItem key={group.title} value={group.title.toLowerCase().replace(/\s+/g, '_')}>
+              <AccordionTrigger className="font-bold">
+                {group.title}
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col gap-1">
+                {group.tasks.map((taskType) => (
+                  <TaskMenuBtn key={taskType} taskType={taskType} />
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      ) : (
+        <div className="flex flex-col items-center gap-2">
+          {taskGroups.flatMap(group => group.tasks).map((taskType) => (
+            <TaskMenuIconBtn key={taskType} taskType={taskType} />
+          ))}
+        </div>
+      )}
     </aside>
   );
 };
@@ -102,6 +128,28 @@ const TaskMenuBtn: React.FC<TaskMenuBtnProps> = ({ taskType }) => {
     >
       <task.icon size={20} />
       {task.label}
+    </Button>
+  );
+};
+
+const TaskMenuIconBtn: React.FC<TaskMenuBtnProps> = ({ taskType }) => {
+  const task = TaskRegistry[taskType];
+
+  const onDragStart = (event: React.DragEvent<HTMLButtonElement>, type: TaskType) => {
+    event.dataTransfer.setData("application/reactflow", type);
+    event.dataTransfer.effectAllowed = "move";
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="w-10 h-10"
+      draggable
+      onDragStart={(event) => onDragStart(event, taskType)}
+      title={task.label}
+    >
+      <task.icon size={20} />
     </Button>
   );
 };
