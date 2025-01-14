@@ -2,17 +2,24 @@
 FROM node:20-alpine AS base
 
 ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME="0.0.0.0" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN apk update && apk upgrade --no-cache && apk add --no-cache \
+# Install dependencies and chromium with necessary security flags
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache \
+    openssl \
     chromium \
     nss \
     freetype \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
-    dumb-init && \
+    dumb-init \
+    bash \
+    chromium-chromedriver && \
     rm -rf /var/cache/apk/* /tmp/*
 
 WORKDIR /app
@@ -33,7 +40,6 @@ COPY . .
 ARG NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_APP_URL
 
-# Make public environment variables available during build
 ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
     NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
     NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in \
@@ -45,27 +51,31 @@ RUN npx prisma generate && \
 # Production stage
 FROM base AS runner
 
-# Create non-root user
-RUN addgroup -S nodejs -g 1001 && \
-    adduser -S nextjs -u 1001 -G nodejs && \
+# Create non-root user with necessary permissions
+RUN addgroup -S pptruser && \
+    adduser -S -g pptruser pptruser && \
     mkdir -p /app/.next/cache && \
-    chown -R nextjs:nodejs /app
+    chown -R pptruser:pptruser /app && \
+    mkdir -p /home/pptruser/Downloads && \
+    chown -R pptruser:pptruser /home/pptruser && \
+    mkdir -p /var/cache/chrome && \
+    chown -R pptruser:pptruser /var/cache/chrome
 
 WORKDIR /app
 
 # Copy only necessary files
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=pptruser:pptruser /app/.next/static ./.next/static
+COPY --from=builder --chown=pptruser:pptruser /app/.next/standalone ./
+COPY --from=builder --chown=pptruser:pptruser /app/node_modules ./node_modules
+COPY --from=builder --chown=pptruser:pptruser /app/package.json ./package.json
+COPY --from=builder --chown=pptruser:pptruser /app/prisma ./prisma
 
 # Set secure permissions
 RUN chmod -R 550 /app && \
     chmod -R 770 /app/.next/cache
 
 # Switch to non-root user
-USER nextjs
+USER pptruser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
