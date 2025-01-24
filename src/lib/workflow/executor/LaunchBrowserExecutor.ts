@@ -2,7 +2,7 @@ import { ExecutionEnvironment } from "@/types/executor";
 import puppeteer from "puppeteer";
 import { LaunchBrowserTask } from "../tasks/LaunchBrowser";
 
-const DEV_MODE = process.env.NODE_ENV === "development";
+//const DEV_MODE = process.env.NODE_ENV === "development";
 
 export async function LaunchBrowserExecutor(
   environment: ExecutionEnvironment<typeof LaunchBrowserTask>,
