@@ -9,7 +9,7 @@
     "lint": "next lint",
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.5.1",
