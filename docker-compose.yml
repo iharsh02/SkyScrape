@@ -1,4 +1,33 @@
 services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "30"
+      - "--rolling-restart"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker/sock 
+  reverse-proxy:
+    image: traefik:v3.1
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+      - "certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
   skyscrape:
     build:
       context: .
@@ -7,17 +36,29 @@ services:
       args:
         - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
         - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
-    container_name: skyscrape
+    
+    container_name: skyscrape 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.skyscrape.rule=Host(`skyscrape.online`)"
+      - "traefik.http.routers.skyscrape.entrypoints=websecure"
+      - "traefik.http.routers.skyscrape.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true" 
     environment:
       - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
     env_file:
-      - .env
-    ports:
-      - "3000:3000"
+      - .env 
+   
+    deploy:
+      mode: replicated
+      replicas: 3 
+    
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 4
+    volumes:
+      -letsencrypt:
