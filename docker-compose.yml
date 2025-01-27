@@ -1,18 +1,7 @@
 services:
-  watchtower:
-    image: containrrr/watchtower
-    command:
-      - "--label-enable"
-      - "--interval"
-      - "30"
-      - "--rolling-restart"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock 
-
   reverse-proxy:
-    image: traefik:v3.1
+    image: traefik:v3.3
     command:
-      - "--api.insecure=true"
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.websecure.address=:443"
@@ -22,15 +11,19 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
       - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+
     ports:
       - "80:80"
       - "443:443"
-      - "3000:3000"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "letsencrypt:/letsencrypt"
-
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
   skyscrape:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.skyscrape.rule=Host(`${NEXT_PUBLIC_APP_URL}`)"
+      - "traefik.http.routers.skyscrape.entrypoints=websecure"
+      - "traefik.http.routers.skyscrape.certificatesresolvers=myresolver"
     build:
       context: .
       dockerfile: Dockerfile
@@ -39,29 +32,28 @@ services:
         - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
         - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
     
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.skyscrape.rule=Host(`skyscrape.online`)"
-      - "traefik.http.routers.skyscrape.entrypoints=websecure"
-      - "traefik.http.routers.skyscrape.tls.certresolver=myresolver"
-      - "traefik.http.services.skyscrape.loadbalancer.server.port=3000"
-      - "com.centurylinklabs.watchtower.enable=true" 
     environment:
       - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+    
     env_file:
-      - .env 
-   
+      - .env
     deploy:
       mode: replicated
-      replicas: 3 
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
     
     restart: unless-stopped
+    
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 4
+      start_period: 30s
 
 volumes:
   letsencrypt:
