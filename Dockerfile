@@ -26,8 +26,7 @@ WORKDIR /app
 FROM base AS deps
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm ci --only=production --ignore-scripts --cache /tmp/.npm && \
-    rm -rf /tmp/.npm
+RUN npm ci 
 
 # Builder stage
 FROM base AS builder
