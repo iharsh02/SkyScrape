@@ -11,6 +11,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set short commit SHA
+        id: vars
+        run: |
+          # Get the short commit hash
+          calculatedSha=$(git rev-parse --short ${{ github.sha }})
+          echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -26,7 +33,7 @@ jobs:
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/skyscrape:latest
-            ghcr.io/${{ github.repository_owner }}/skyscrape:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/skyscrape:${{ env.COMMIT_SHORT_SHA }}
           build-args: |
             NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
             NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
